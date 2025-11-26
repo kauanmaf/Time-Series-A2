@@ -1,0 +1,46 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# --- Virtual environment ---
+venv/
+.env/
+.venv/
+env/
+ENV/
+
+# --- Jupyter Notebooks ---
+.ipynb_checkpoints/
+*.nbconvert.ipynb
+
+# --- IDEs and editors ---
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- Logs and temp files ---
+*.log
+*.tmp
+*.bak
+.DS_Store
+Thumbs.db
+
+# --- Data and outputs ---
+data/
+outputs/
+*.xlsx
+*.parquet
+*.h5
+
+# --- Environment/config files ---
+.env
+*.config
