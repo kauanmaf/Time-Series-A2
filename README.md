@@ -1,5 +1,9 @@
 # Análise de Séries Temporais com Covariáveis - Previsão de Volume
 
+- **`relatorio.ipynb`**: Notebook principal que consolida toda a análise, modelagem e conclusões do projeto.
+- **`relatorio.pdf`**: Resumo executivo do projeto
+---
+
 Este repositório contém a análise e modelagem de uma série temporal para a previsão de `volume`, como parte do projeto da disciplina de Séries Temporais da FGV EMAp.
 
 ## Integrantes
@@ -51,4 +55,4 @@ Os notebooks contêm toda a análise e código. Para executá-los, é necessári
 pip install -r requirements.txt
 ```
 
-- **`relatorio.ipynb`**: Notebook principal que consolida toda a análise, modelagem e conclusões do projeto.
+
