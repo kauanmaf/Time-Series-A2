@@ -1,111 +1,54 @@
-# Análise de Séries Temporais - Volume Semanal
+# Análise de Séries Temporais com Covariáveis - Previsão de Volume
 
-Este repositório contém uma análise completa de séries temporais aplicada a dados de volume semanal, desenvolvida como parte de um projeto acadêmico da disciplina de Séries Temporais.
+Este repositório contém a análise e modelagem de uma série temporal para a previsão de `volume`, como parte do projeto da disciplina de Séries Temporais da FGV EMAp.
 
-## Documentação do Projeto
+## Integrantes
 
-Para facilitar o acesso aos principais materiais do projeto, disponibilizamos:
+- Gustavo Tironi
+- Kauan Mariani Ferreira
+- Lívia Verly
+- Matheus Fillype Ferreira de Carvalho
+- Pedro Henrique Coterli
+- Sillas Rocha da Costa
 
-- **[Relatório Executivo (PDF)](resumo_executivo.pdf)**: Um resumo de 5 páginas com a metodologia, principais resultados e conclusões do projeto.
-- **[Análise Completa (Jupyter Notebook)](relatorio.ipynb)**: O notebook contendo todo o código e o passo a passo detalhado da análise.
+## Objetivo
 
-## Descrição do Projeto
-
-O projeto realiza uma análise detalhada de uma série temporal de volume semanal, explorando diferentes técnicas de modelagem e previsão:
-
-- **Decomposição sazonal** para identificar tendências e padrões
-- **Modelos baseline** para estabelecer benchmarks de desempenho
-- **Regressão linear múltipla** com diferentes covariáveis
-- **Análise de resíduos** para validação dos modelos
-
-### Dependências Principais
-
-- `pandas` - Manipulação de dados
-- `numpy` - Operações numéricas
-- `matplotlib` - Visualização de dados
-- `statsmodels` - Modelagem estatística e análise de séries temporais
-- `scikit-learn` - Métricas de avaliação
-- `scipy` - Funções estatísticas
+O projeto visa evoluir de uma análise univariada para uma modelagem multivariada da variável `volume`. O objetivo é incorporar dados de investimento (`inv`) e de usuários ativos (`users`) para verificar se essas informações externas melhoram a precisão das previsões em comparação com modelos de base. O foco é entender o impacto real dessas variáveis de negócio na série temporal de `volume`.
 
 ## Metodologia
 
-### 1. Análise Exploratória
+A abordagem metodológica foi dividida nas seguintes etapas:
 
-- Visualização da série temporal
-- Análise de autocorrelação (ACF)
-- Decomposição sazonal (períodos de 4 e 52 semanas)
-- Avaliação de tendência e sazonalidade
+1.  **Análise Exploratória Multivariada**:
+    *   Visualização das séries (`volume`, `inv`, `users`) para identificar padrões e relações.
+    *   Análise de autocorrelação (ACF) e autocorrelação parcial (PACF) da variável `volume` para entender sua estrutura de dependência temporal.
+    *   Decomposição STL para investigar componentes de tendência e sazonalidade. Foi identificada heterocedasticidade, levando à aplicação de uma transformação logarítmica na variável `volume`.
+    *   Análise de correlação cruzada (CCF) para identificar os lags de impacto das covariáveis `inv` e `users` na variável `volume`.
 
-### 2. Modelos Baseline
+2.  **Modelagem TSLM (Time Series Linear Model)**:
+    *   Ajuste de modelos de regressão linear para capturar a relação estrutural entre as covariáveis e a variável `volume`.
+    *   Foram testados três modelos: um simples, um com tendência e um modelo de elasticidade (log-log).
+    *   O modelo de **elasticidade com tendência** apresentou o melhor desempenho:
+        `log(volume) ~ trend + log(inv_lag1) + log(users_lag1) + log(users_lag8)`
 
-Foram implementados quatro modelos baseline:
+3.  **Diagnóstico de Resíduos**:
+    *   Análise dos resíduos do melhor modelo TSLM para verificar as premissas de normalidade, homocedasticidade e independência.
+    *   Os resíduos se mostraram normais, mas foi encontrada **autocorrelação significativa**, indicando que a estrutura temporal não foi completamente capturada pelo modelo de regressão.
 
-- **Média**: Previsão baseada na média histórica
-- **Random Walk (Ingênuo)**: Último valor observado
-- **Random Walk with Drift**: Incorpora tendência linear
-- **Ingênuo Sazonal**: Considera sazonalidade de 52 semanas
+4.  **ARIMA com Covariáveis (Regressão Dinâmica)**:
+    *   Com base na autocorrelação residual do TSLM (principalmente um corte no PACF no lag 1), um modelo ARIMA foi ajustado para modelar essa dinâmica restante.
+    *   O modelo final combina a parte estrutural do TSLM com a parte dinâmica do ARIMA para obter previsões mais precisas.
 
-### 3. Regressão Linear Múltipla
+## Validação
 
-Covariáveis testadas:
+A validação do modelo foi realizada simulando um cenário real de previsão, utilizando uma estratégia de *walk-forward* (previsões semana a semana) para horizontes de até 4 semanas à frente, garantindo a robustez dos resultados para uso prático.
 
-- **Tendência**: Covariável temporal linear
-- **Dummies mensais**: Indicadoras para cada mês
-- **Lags**: Valores defasados (1, 4 e 12 semanas)
-- **Médias Móveis**: Simples e exponenciais (4 e 12 semanas)Relatório Executivo (PDF): Um resumo de 5 páginas com a metodologia, principais resultados e conclusões do projeto.
-Análise Completa (Jupyter Notebook): O notebook contendo todo o código e o passo a passo detalhado da análise.
-- **Volatilidade**: Desvio padrão móvel (4 e 12 semanas)
+## Como Executar
 
-### 4. Métricas de Avaliação
+Os notebooks contêm toda a análise e código. Para executá-los, é necessário ter as bibliotecas listadas em `requirements.txt`.
 
-#### Métricas Pontuais:
-- **MAE** (Mean Absolute Error)
-- **RMSE** (Root Mean Squared Error)
-- **MAPE** (Mean Absolute Percentage Error)
-- **MASE** (Mean Absolute Scaled Error)
-
-#### Métricas Distribucionais:
-- **Winkler Score**: Avalia intervalos de previsão
-- **Quantile Score**: Precisão em quantis específicos
-- **CRPS** (Continuous Ranked Probability Score)
-
-## Principais Resultados
-
-### Análise da Série
-
-- **Tendência**: Forte evidência de tendência crescente
-- **Sazonalidade**: Não foi identificada sazonalidade significativa
-- **Transformação**: Modelo logarítmico apresentou melhor ajuste (R² = 0.814)
-
-### Melhor Modelo
-
-O modelo de **Lags** apresentou o melhor desempenho geral:
-- Excelente MAPE e baixa média de resíduos
-- Boa captura da dependência temporal
-- Resíduos bem comportados (ACF próximo de ruído branco)
-
-### Comparação de Desempenho
-
-Os modelos de **Regressão Linear Múltipla** superaram significativamente os baselines, com destaque para:
-1. Modelo de Lags
-2. Médias Móveis
-3. Lags + Médias Móveis
-
-## Como Usar
-
-1. Abra o notebook principal:
 ```bash
-jupyter notebook relatorio.ipynb
+pip install -r requirements.txt
 ```
 
-2. Execute as células sequencialmente para:
-   - Carregar e visualizar os dados
-   - Realizar análise exploratória
-   - Treinar modelos baseline
-   - Ajustar modelos de regressão linear
-   - Avaliar e comparar resultados
-   - Analisar resíduos
-
-## 👥 Contribuidores
-
-Pedro Henrique Coterli, Kauan Mariani Ferreira, Matheus Fillype Ferreira de Carvalho, Sillas Rocha da Costa, Gustavo Tironi, Lívia Verly
+- **`relatorio.ipynb`**: Notebook principal que consolida toda a análise, modelagem e conclusões do projeto.
